@@ -32,9 +32,6 @@ try:
     with open("models/scaler_soil.pkl", "rb") as f:
         soil_scaler = pickle.load(f)
 
-    with open("models/model_eqs.pkl", "rb") as f:
-        eqs_model = pickle.load(f)
-
 except Exception as e:
     raise RuntimeError(f"Gagal load model: {e}")
 
@@ -109,9 +106,7 @@ def predict_eqs(request: EQSRequest):
         X_soil_scaled = soil_scaler.transform(X_soil)
         soil_score = float(soil_model.predict(X_soil_scaled)[0])
 
-
-        eqs_input = [[air_score, water_score, soil_score]]
-        eqs = float(eqs_model.predict(eqs_input)[0])
+        eqs = 0.4 * air_score + 0.3 * water_score + 0.3 * soil_score
 
         return {"EQS": round(eqs, 2)}
 
