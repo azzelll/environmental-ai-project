@@ -1,15 +1,19 @@
-from fastapi import APIRouter
-import joblib
-import numpy as np
-from utils.preprocessing import preprocess_soil_data
+import pickle
+from utils.preprocess import preprocess
 
-router = APIRouter()
-model = joblib.load('app/models/model_soil.pkl')
+with open("models/model_soil.pkl", "rb") as f:
+    model = pickle.load(f)
+with open("models/scaler_soil.pkl", "rb") as f:
+    scaler = pickle.load(f)
 
-@router.post("/")
-def predict_soil(data: dict):
-    """Predict soil quality"""
-    features = preprocess_soil_data(data)
-    prediction = model.predict(np.array(features).reshape(1, -1))[0]
+sample = {
+    "N": 145,
+    "P": 42, "K": 210, "ph": 6.4,
+    "EC": 0.55, "S": 0.21, "Cu": 10.2, "Fe": 115.0,
+    "Mn": 60.0, "Zn": 50.0, "B": 25.0
+}
 
-    return {"soil_quality_score": round(float(prediction), 3)}
+X = preprocess(sample, "soil")
+X_scaled = scaler.transform(X)
+prediction = model.predict(X_scaled)[0]
+print("Predicted Soil Score:", prediction)

@@ -1,43 +1,125 @@
-from fastapi import FastAPI
-from routes import predict_air, predict_soil, predict_water
-import joblib
-import numpy as np
+# main.py — Unified Environmental Quality Prediction API (EQS only)
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+import pickle
+from utils.preprocess import preprocess
 
 app = FastAPI(
-    title="🌍 Hybrid Environmental Quality API",
-    version="1.0.0",
-    description="Predict Air, Soil, and Water Quality using AI models with a hybrid meta-model."
+    title="Environmental Quality Prediction API",
+    description="Predict overall Environmental Quality Score (EQS) from Air, Water, and Soil data.",
+    version="3.0"
 )
 
-# Load semua model (sekali saja)
-model_air = joblib.load('app/models/model_air.pkl')
-model_soil = joblib.load('app/models/model_soil.pkl')
-model_water = joblib.load('app/models/model_water.pkl')
-meta_model = joblib.load('app/models/meta_model.pkl')
+# =====================================================
+# Load all models & scalers
+# =====================================================
+try:
+    # Air
+    with open("models/model_air.pkl", "rb") as f:
+        air_model = pickle.load(f)
+    with open("models/scaler_air.pkl", "rb") as f:
+        air_scaler = pickle.load(f)
 
-# Register route endpoints
-app.include_router(predict_air.router, prefix="/predict/air", tags=["Air"])
-app.include_router(predict_soil.router, prefix="/predict/soil", tags=["Soil"])
-app.include_router(predict_water.router, prefix="/predict/water", tags=["Water"])
+    # Water
+    with open("models/model_water.pkl", "rb") as f:
+        water_model = pickle.load(f)
+    with open("models/scaler_water.pkl", "rb") as f:
+        water_scaler = pickle.load(f)
 
+    # Soil
+    with open("models/model_soil.pkl", "rb") as f:
+        soil_model = pickle.load(f)
+    with open("models/scaler_soil.pkl", "rb") as f:
+        soil_scaler = pickle.load(f)
+
+    with open("models/model_eqs.pkl", "rb") as f:
+        eqs_model = pickle.load(f)
+
+except Exception as e:
+    raise RuntimeError(f"Gagal load model: {e}")
+
+class AirData(BaseModel):
+    CO_GT: float
+    NO2_GT: float
+    PT08_S5_O3: float
+    T: float
+    RH: float
+    AH: float
+
+class WaterData(BaseModel):
+    Temp: float
+    Turbidity_cm: float
+    DO_mg_L: float
+    BOD_mg_L: float
+    CO2: float
+    pH: float
+    Alkalinity_mg_L: float
+    Hardness_mg_L: float
+    Calcium_mg_L: float
+    Ammonia_mg_L: float
+    Nitrite_mg_L: float
+    Phosphorus_mg_L: float
+    H2S_mg_L: float
+    Plankton_No_L: float
+
+class SoilData(BaseModel):
+    N: float
+    P: float
+    K: float
+    ph: float
+    EC: float
+    S: float
+    Cu: float
+    Fe: float
+    Mn: float
+    Zn: float
+    B: float
+
+class EQSRequest(BaseModel):
+    air: AirData
+    water: WaterData
+    soil: SoilData
+
+# =====================================================
+# Root endpoint
+# =====================================================
 @app.get("/")
 def root():
-    return {"message": "🌿 Environmental AI Hybrid Model API is running!"}
+    return {"message": "🌎 Environmental Quality Prediction API is running."}
 
-@app.post("/predict/environment")
-def predict_environment(data: dict):
-    """
-    Hybrid prediction: combine air, soil, and water model outputs to get final score.
-    """
-    air_score = model_air.predict(np.array(data["air"]).reshape(1, -1))[0]
-    soil_score = model_soil.predict(np.array(data["soil"]).reshape(1, -1))[0]
-    water_score = model_water.predict(np.array(data["water"]).reshape(1, -1))[0]
+# =====================================================
+# Predict endpoint (returns EQS only)
+# =====================================================
+@app.post("/predict")
+def predict_eqs(request: EQSRequest):
+    try:
 
-    final_score = meta_model.predict([[air_score, soil_score, water_score]])[0]
+        X_air = preprocess(request.air.dict(), "air")
+        X_air_scaled = air_scaler.transform(X_air)
+        aqi_pred = air_model.predict(X_air_scaled)[0]
+        air_score = 100 - (aqi_pred / 500 * 100)
 
-    return {
-        "air_score": round(float(air_score), 3),
-        "soil_score": round(float(soil_score), 3),
-        "water_score": round(float(water_score), 3),
-        "environmental_index": round(float(final_score), 3)
-    }
+
+        X_water = preprocess(request.water.dict(), "water")
+        X_water_scaled = water_scaler.transform(X_water)
+        water_score = float(water_model.predict(X_water_scaled)[0])
+
+
+        X_soil = preprocess(request.soil.dict(), "soil")
+        X_soil_scaled = soil_scaler.transform(X_soil)
+        soil_score = float(soil_model.predict(X_soil_scaled)[0])
+
+
+        eqs_input = [[air_score, water_score, soil_score]]
+        eqs = float(eqs_model.predict(eqs_input)[0])
+
+        return {"EQS": round(eqs, 2)}
+
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Prediction error: {e}")
+
+# =====================================================
+# Run with:
+# uvicorn main:app --reload
+# =====================================================

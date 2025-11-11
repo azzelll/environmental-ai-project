@@ -1,20 +1,22 @@
-from fastapi import APIRouter
-import joblib
-import numpy as np
-from utils.preprocessing import preprocess_air_data
-from utils.helpers import classify_aqi
+import pickle
+from utils.preprocess import preprocess
 
-router = APIRouter()
-model = joblib.load('app/models/model_air.pkl')
+with open("models/model_air.pkl", "rb") as f:
+    model = pickle.load(f)
+with open("models/scaler_air.pkl", "rb") as f:
+    scaler = pickle.load(f)
 
-@router.post("/")
-def predict_air(data: dict):
-    """Predict air quality from sensor data"""
-    features = preprocess_air_data(data)
-    prediction = model.predict(np.array(features).reshape(1, -1))[0]
-    category = classify_aqi(prediction)
+sample = {
+    "CO_GT": 2.5,
+    "NO2_GT": 110,
+    "PT08_S5_O3": 1000,
+    "T": 14.5,
+    "RH": 60.0,
+    "AH": 0.75
+}
 
-    return {
-        "air_quality_score": round(float(prediction), 3),
-        "category": category
-    }
+X = preprocess(sample, "air")
+X_scaled = scaler.transform(X)
+prediction = model.predict(X_scaled)[0]
+
+print("Predicted AQI:", prediction)
