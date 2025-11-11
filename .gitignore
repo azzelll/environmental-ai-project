@@ -1,0 +1,24 @@
+# --- Environment files ---
+.env
+
+# --- Python cache ---
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# --- Virtual environments ---
+venv/
+.env/
+.venv/
+ENV/
+env.bak/
+venv.bak/
+# --- Logs ---
+logs/
+*.log
+
+# --- OS / IDE stuff ---
+.DS_Store
+.idea/
+.vscode/
