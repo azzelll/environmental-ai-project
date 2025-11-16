@@ -159,7 +159,7 @@ def predict_eqs(request: EQSRequest):
 
         # -------- Return --------
         return {
-            "Air_Score": round(air_score, 2),
+            "Air_Score": round(aqi_pred, 2),
             "Water_Score": round(water_score, 2),
             "Soil_Score": round(soil_score, 2),
             "EQS": round(eqs, 2),
