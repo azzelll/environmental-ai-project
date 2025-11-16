@@ -27,19 +27,19 @@ try:
     MODEL_DIR = os.path.join(BASE_DIR, "models")
 
     # Air
-    with open(os.path.join(MODEL_DIR, "model_air.pkl"), "rb") as f:
+    with open(os.path.join(MODEL_DIR, "air_model.pkl"), "rb") as f:
         air_model = pickle.load(f)
     with open(os.path.join(MODEL_DIR, "scaler_air.pkl"), "rb") as f:
         air_scaler = pickle.load(f)
 
     # Water
-    with open(os.path.join(MODEL_DIR, "model_water.pkl"), "rb") as f:
+    with open(os.path.join(MODEL_DIR, "water_model.pkl"), "rb") as f:
         water_model = pickle.load(f)
     with open(os.path.join(MODEL_DIR, "scaler_water.pkl"), "rb") as f:
         water_scaler = pickle.load(f)
 
     # Soil
-    with open(os.path.join(MODEL_DIR, "model_soil.pkl"), "rb") as f:
+    with open(os.path.join(MODEL_DIR, "soil_model.pkl"), "rb") as f:
         soil_model = pickle.load(f)
     with open(os.path.join(MODEL_DIR, "scaler_soil.pkl"), "rb") as f:
         soil_scaler = pickle.load(f)

@@ -16,7 +16,7 @@ client = genai.Client(api_key=GEMINI_API_KEY)
 
 # path absolut ke model folder
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))  # -> app/
-MODEL_PATH = os.path.join(BASE_DIR, "models", "model_air.pkl")
+MODEL_PATH = os.path.join(BASE_DIR, "models", "air_model.pkl")
 SCALER_PATH = os.path.join(BASE_DIR, "models", "scaler_air.pkl")
 
 with open(MODEL_PATH, "rb") as f:

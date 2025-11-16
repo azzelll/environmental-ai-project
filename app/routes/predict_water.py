@@ -20,7 +20,7 @@ client = genai.Client(api_key=GEMINI_API_KEY)
 # Load model dan scaler
 # =====================================================
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))  # -> app/
-MODEL_PATH = os.path.join(BASE_DIR, "models", "model_water.pkl")
+MODEL_PATH = os.path.join(BASE_DIR, "models", "water_model.pkl")
 SCALER_PATH = os.path.join(BASE_DIR, "models", "scaler_water.pkl")
 
 with open(MODEL_PATH, "rb") as f:
