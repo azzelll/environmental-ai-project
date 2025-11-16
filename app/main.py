@@ -142,7 +142,8 @@ def predict_eqs(request: EQSRequest):
         # -------- WATER --------
         X_water = preprocess(request.water.dict(), "water")
         X_water_scaled = water_scaler.transform(X_water)
-        water_score = float(water_model.predict(X_water_scaled)[0])
+        water_pred = float(water_model.predict(X_water_scaled)[0])
+        water_score = 100 - (water_pred / 2 * 100)
 
         # -------- SOIL --------
         X_soil = preprocess(request.soil.dict(), "soil")

@@ -69,6 +69,7 @@ def generate_description(air, category):
 X = preprocess(sample, "air")
 X_scaled = scaler.transform(X)
 prediction = model.predict(X_scaled)[0]
+air_score = 100 - (prediction / 500 * 100)
 
 print("Predicted AQI:", prediction)
-print("Gemini Analysis:", generate_description(prediction, classify_eqs(prediction)))
+print("Gemini Analysis:", generate_description(air_score, classify_eqs(air_score)))

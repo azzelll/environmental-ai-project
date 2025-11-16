@@ -91,6 +91,7 @@ X = preprocess(sample, "soil")
 X_scaled = scaler.transform(X)
 prediction = float(model.predict(X_scaled)[0])
 
+
 category = classify_soil(prediction)
 description = generate_description(prediction, category)
 

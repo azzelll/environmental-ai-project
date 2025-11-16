@@ -98,6 +98,7 @@ sample = {
 X = preprocess(sample, "water")
 X_scaled = scaler.transform(X)
 prediction = model.predict(X_scaled)[0]
+water_score = 100 - (prediction / 2 * 100)
 
 # Konversi kalau model klasifikasi (0–2)
 if prediction in [0, 1, 2]:
