@@ -92,16 +92,12 @@ class EQSRequest(BaseModel):
 
 
 def classify_eqs(eqs: float) -> str:
-    if eqs >= 80:
-        return "Excellent"
-    elif eqs >= 60:
+    if eqs >= 70:
         return "Good"
-    elif eqs >= 40:
+    elif eqs >= 35:
         return "Moderate"
-    elif eqs >= 20:
-        return "Poor"
     else:
-        return "Critical"
+        return "Poor"
 
 
 def generate_description(air, water, soil, eqs, category):
