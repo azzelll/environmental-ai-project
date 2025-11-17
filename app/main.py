@@ -112,7 +112,7 @@ def generate_description(air, water, soil, eqs, category):
     1. What these scores indicate about the environment.
     2. How good or bad the overall quality is.
     3. One actionable suggestion for improvement.
-    Keep it simple and human-readable, plain text, 3-4 sentences.
+    Keep it simple and human-readable, PLAIN TEXT(text only don't add bold or smth), 2-3 sentences, in indonesia, and make it for description of environmental quality.
     """
 
     response = client.models.generate_content(
