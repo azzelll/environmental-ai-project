@@ -112,7 +112,7 @@ def generate_description(air, water, soil, eqs, category):
     1. What these scores indicate about the environment.
     2. How good or bad the overall quality is.
     3. One actionable suggestion for improvement.
-    Keep it simple and human-readable.
+    Keep it simple and human-readable, plain text, 3-4 sentences.
     """
 
     response = client.models.generate_content(
@@ -143,7 +143,7 @@ def predict_eqs(request: EQSRequest):
         X_water = preprocess(request.water.dict(), "water")
         X_water_scaled = water_scaler.transform(X_water)
         water_pred = float(water_model.predict(X_water_scaled)[0])
-        water_score = 100 - (water_pred / 2 * 100)
+        water_score = (water_pred / 2 * 100)
 
         # -------- SOIL --------
         X_soil = preprocess(request.soil.dict(), "soil")
