@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from utils.preprocess import preprocess
 from google import genai
 from google.genai import types
+from fastapi.middleware.cors import CORSMiddleware
 
 
 load_dotenv()
@@ -22,6 +23,7 @@ app = FastAPI(
     description="Predict Air, Water, Soil, and Environmental Quality Score (EQS) with Gemini-generated analysis.",
     version="4.0"
 )
+
 try:
     BASE_DIR = os.path.dirname(__file__)
     MODEL_DIR = os.path.join(BASE_DIR, "models")
@@ -158,6 +160,7 @@ def predict_eqs(request: EQSRequest):
         description = generate_description(air_score, water_score, soil_score, eqs, category)
 
         # -------- Return --------
+        print(air_score, water_score, soil_score, eqs, category, description)
         return {
             "Air_Score": round(aqi_pred, 2),
             "Water_Score": round(water_score, 2),
@@ -168,4 +171,5 @@ def predict_eqs(request: EQSRequest):
         }
 
     except Exception as e:
+        print(f"Prediction error: {e}")
         raise HTTPException(status_code=500, detail=f"Prediction error: {e}")
