@@ -11,13 +11,13 @@ load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 if not GEMINI_API_KEY:
-    raise RuntimeError("❌ GEMINI_API_KEY not found in .env file!")
+    raise RuntimeError("GEMINI_API_KEY not found in .env file!")
 
 client = genai.Client(api_key=GEMINI_API_KEY)
 
 
 app = FastAPI(
-    title="🌎 Environmental Quality Prediction API",
+    title="Environmental Quality Prediction API",
     description="Predict Air, Water, Soil, and Environmental Quality Score (EQS) with Gemini-generated analysis.",
     version="4.0"
 )
@@ -45,7 +45,7 @@ try:
         soil_scaler = pickle.load(f)
 
 except Exception as e:
-    raise RuntimeError(f"❌ Failed to load models: {e}")
+    raise RuntimeError(f"Failed to load models: {e}")
 
 
 class AirData(BaseModel):
@@ -127,7 +127,7 @@ def generate_description(air, water, soil, eqs, category):
 
 @app.get("/")
 def root():
-    return {"message": "🌎 Environmental Quality Prediction API (Gemini 2.5) is running!"}
+    return {"message": "Environmental Quality Prediction API (Gemini 2.5) is running!"}
 
 
 @app.post("/predict")
@@ -177,7 +177,7 @@ def predict_eqs(request: EQSRequest):
 # utils/preprocess.py
 import pandas as pd
 
-# 🌫️ Air
+# Air
 def preprocess_air_data(data: dict) -> pd.DataFrame:
     return pd.DataFrame([{
         "CO(GT)": float(data.get("CO(GT)", data.get("CO_GT", 0))),
@@ -188,7 +188,7 @@ def preprocess_air_data(data: dict) -> pd.DataFrame:
         "AH": float(data.get("AH", 0))
     }]).fillna(0)
 
-# 💧 Water
+# Water
 def preprocess_water_data(data: dict) -> pd.DataFrame:
     return pd.DataFrame([{
         "Temp": float(data.get("Temp", 0)),
@@ -207,7 +207,7 @@ def preprocess_water_data(data: dict) -> pd.DataFrame:
         "Plankton (No. L-1)": float(data.get("Plankton (No. L-1)", data.get("Plankton_No_L", 0)))
     }]).fillna(0)
 
-# 🌱 Soil
+# Soil
 def preprocess_soil_data(data: dict) -> pd.DataFrame:
     return pd.DataFrame([{
         "N": float(data.get("N", 0)),
@@ -223,7 +223,7 @@ def preprocess_soil_data(data: dict) -> pd.DataFrame:
         "B": float(data.get("B", 0))
     }]).fillna(0)
 
-# 🔁 Unified selector
+# Unified selector
 def preprocess(data: dict, data_type: str):
     data_type = data_type.lower()
     if data_type == "air":
