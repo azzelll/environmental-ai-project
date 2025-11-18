@@ -6,7 +6,6 @@ from dotenv import load_dotenv
 from app.utils.preprocess import preprocess
 from google import genai
 from google.genai import types
-from fastapi.middleware.cors import CORSMiddleware
 
 
 load_dotenv()
